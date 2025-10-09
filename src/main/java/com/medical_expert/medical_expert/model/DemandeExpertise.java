@@ -1,6 +1,5 @@
 package com.medical_expert.medical_expert.model;
 
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -24,8 +23,16 @@ public class DemandeExpertise {
     private String statut = "EN_ATTENTE";
     private LocalDateTime dateDemande = LocalDateTime.now();
 
+    // 👇 Ajoute ces deux nouveaux champs :
+    @Column(columnDefinition = "TEXT")
+    private String reponse;
+
+    @Column(columnDefinition = "TEXT")
+    private String recommandations;
+
     public DemandeExpertise() {}
-    // Getters & setters...
+
+    // --- Getters & Setters ---
 
     public Long getId() {
         return id;
@@ -81,5 +88,21 @@ public class DemandeExpertise {
 
     public void setDateDemande(LocalDateTime dateDemande) {
         this.dateDemande = dateDemande;
+    }
+
+    public String getReponse() {
+        return reponse;
+    }
+
+    public void setReponse(String reponse) {
+        this.reponse = reponse;
+    }
+
+    public String getRecommandations() {
+        return recommandations;
+    }
+
+    public void setRecommandations(String recommandations) {
+        this.recommandations = recommandations;
     }
 }
