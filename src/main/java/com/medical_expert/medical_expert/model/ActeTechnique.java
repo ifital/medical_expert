@@ -15,7 +15,6 @@ public class ActeTechnique {
 
     public ActeTechnique() {}
 
-    // Getters & setters...
 
     public Long getId() {
         return id;

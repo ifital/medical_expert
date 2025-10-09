@@ -3,7 +3,25 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
-    <persistence-unit name="default">
 
+    <persistence-unit name="teleexpertisePU" transaction-type="RESOURCE_LOCAL">
+        <class>com.medical_expert.medical_expert.model.User</class>
+        <class>com.medical_expert.medical_expert.model.Medecin</class>
+        <class>com.medical_expert.medical_expert.model.Generaliste</class>
+        <class>com.medical_expert.medical_expert.model.Specialiste</class>
+        <class>com.medical_expert.medical_expert.model.Patient</class>
+        <class>com.medical_expert.medical_expert.model.Consultation</class>
+        <class>com.medical_expert.medical_expert.model.DemandeExpertise</class>
+        <class>com.medical_expert.medical_expert.model.ActeTechnique</class>
+
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/teleexpertise_db"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+            <property name="javax.persistence.jdbc.password" value="latifi-2001"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+        </properties>
     </persistence-unit>
 </persistence>
