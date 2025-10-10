@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
                     resp.sendRedirect(req.getContextPath() + "/jsp/dashboard_specialiste.jsp");
                     break;
                 default:
-                    resp.sendRedirect(req.getContextPath() + "/jsp/login.jsp");
+                    resp.sendRedirect(req.getContextPath() + "/jsp/index.jsp");
             }
         } else {
             req.setAttribute("error", "Identifiants invalides");
