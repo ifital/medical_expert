@@ -1,15 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Login - Télé-Expertise</title>
-    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <h2>Connexion</h2>
 
 <form action="login" method="post">
-    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
     <label>Email :</label>
     <input type="email" name="email" required><br>
 

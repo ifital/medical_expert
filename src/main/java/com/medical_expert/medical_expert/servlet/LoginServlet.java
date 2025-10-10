@@ -24,10 +24,10 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
-        String username = req.getParameter("username");
+        String email = req.getParameter("email");
         String password = req.getParameter("password");
 
-        User user = authService.login(username, password);
+        User user = authService.login(email, password);
         if (user != null) {
             HttpSession session = req.getSession(true);
             session.setAttribute("user", user);

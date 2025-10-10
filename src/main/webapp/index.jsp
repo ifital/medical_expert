@@ -6,7 +6,6 @@
 </head>
 <body>
 <h2>Créer un compte</h2>
-
 <form action="${pageContext.request.contextPath}/register" method="post">
     <label>Nom :</label>
     <input type="text" name="nom" required><br>
