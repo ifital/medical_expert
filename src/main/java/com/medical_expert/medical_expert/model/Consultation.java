@@ -1,8 +1,9 @@
 package com.medical_expert.medical_expert.model;
 
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "consultations")
@@ -26,79 +27,56 @@ public class Consultation {
     private String statut; // TERMINEE ou EN_ATTENTE_AVIS_SPECIALISTE
     private LocalDateTime dateConsultation = LocalDateTime.now();
 
+    // --- Nouvelle relation ---
+    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ActeTechnique> actesTechniques = new ArrayList<>();
+
     public Consultation() {}
 
-    // Getters & setters...
+    // --- Getters & Setters existants ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
+    public Patient getPatient() { return patient; }
+    public void setPatient(Patient patient) { this.patient = patient; }
+
+    public Generaliste getGeneraliste() { return generaliste; }
+    public void setGeneraliste(Generaliste generaliste) { this.generaliste = generaliste; }
+
+    public String getMotif() { return motif; }
+    public void setMotif(String motif) { this.motif = motif; }
+
+    public String getObservations() { return observations; }
+    public void setObservations(String observations) { this.observations = observations; }
+
+    public String getDiagnostic() { return diagnostic; }
+    public void setDiagnostic(String diagnostic) { this.diagnostic = diagnostic; }
+
+    public double getCout() { return cout; }
+    public void setCout(double cout) { this.cout = cout; }
+
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
+
+    public LocalDateTime getDateConsultation() { return dateConsultation; }
+    public void setDateConsultation(LocalDateTime dateConsultation) { this.dateConsultation = dateConsultation; }
+
+    // --- Getter/Setter pour actes techniques ---
+    public List<ActeTechnique> getActesTechniques() {
+        return actesTechniques;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setActesTechniques(List<ActeTechnique> actesTechniques) {
+        this.actesTechniques = actesTechniques;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public void addActeTechnique(ActeTechnique acte) {
+        actesTechniques.add(acte);
+        acte.setConsultation(this);
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public Generaliste getGeneraliste() {
-        return generaliste;
-    }
-
-    public void setGeneraliste(Generaliste generaliste) {
-        this.generaliste = generaliste;
-    }
-
-    public String getMotif() {
-        return motif;
-    }
-
-    public void setMotif(String motif) {
-        this.motif = motif;
-    }
-
-    public String getObservations() {
-        return observations;
-    }
-
-    public void setObservations(String observations) {
-        this.observations = observations;
-    }
-
-    public String getDiagnostic() {
-        return diagnostic;
-    }
-
-    public void setDiagnostic(String diagnostic) {
-        this.diagnostic = diagnostic;
-    }
-
-    public double getCout() {
-        return cout;
-    }
-
-    public void setCout(double cout) {
-        this.cout = cout;
-    }
-
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
-    }
-
-    public LocalDateTime getDateConsultation() {
-        return dateConsultation;
-    }
-
-    public void setDateConsultation(LocalDateTime dateConsultation) {
-        this.dateConsultation = dateConsultation;
+    public void removeActeTechnique(ActeTechnique acte) {
+        actesTechniques.remove(acte);
+        acte.setConsultation(null);
     }
 }

@@ -26,9 +26,6 @@ public class PatientServlet extends HttpServlet {
         if (action == null) action = "list";
 
         switch (action) {
-            case "edit":
-                preparerEdition(req, resp);
-                break;
             case "delete":
                 supprimerPatient(req, resp);
                 break;
@@ -51,20 +48,6 @@ public class PatientServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
     }
 
-    // ✅ Préparer l'édition
-    private void preparerEdition(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        Long id = Long.parseLong(req.getParameter("id"));
-        Patient patient = patientService.getPatientById(id);
-        List<Patient> patients = patientService.getAllPatients()
-                .stream()
-                .sorted(Comparator.comparing(Patient::getDateArrivee).reversed())
-                .collect(Collectors.toList());
-
-        req.setAttribute("patientToEdit", patient);
-        req.setAttribute("patients", patients);
-        req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
-    }
 
     // ✅ Supprimer un patient
     private void supprimerPatient(HttpServletRequest req, HttpServletResponse resp)

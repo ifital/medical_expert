@@ -11,58 +11,58 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @WebServlet("/consultations/add")
 public class ConsultationAddServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
     private final ConsultationService consultationService = new ConsultationService();
     private final PatientService patientService = new PatientService();
-    private final MedecinService medecinService = new MedecinService();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // forward vers formulaire si besoin
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        // Liste des patients disponibles
+        List<Patient> patients = patientService.getAllPatients();
+        req.setAttribute("patients", patients);
+
         req.getRequestDispatcher("/jsp/consultation_form.jsp").forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
 
         String patientIdStr = req.getParameter("patientId");
-        String generalisteIdStr = req.getParameter("generalisteId");
         String motif = req.getParameter("motif");
         String observations = req.getParameter("observations");
 
-        Consultation c = new Consultation();
-        c.setMotif(motif);
-        c.setObservations(observations);
-        c.setDateConsultation(LocalDateTime.now());
-        c.setStatut("EN_COURS");
-        c.setCout(150.0);
-
-        if (patientIdStr != null && !patientIdStr.isEmpty()) {
-            Long pid = Long.parseLong(patientIdStr);
-            Patient p = patientService.getPatientById(pid);
-            c.setPatient(p);
+        if (patientIdStr == null || patientIdStr.isEmpty()) {
+            req.setAttribute("error", "Veuillez sélectionner un patient.");
+            doGet(req, resp);
+            return;
         }
 
-        if (generalisteIdStr != null && !generalisteIdStr.isEmpty()) {
-            Long gid = Long.parseLong(generalisteIdStr);
-            Generaliste g = (Generaliste) medecinService.getMedecinById(gid);
-            c.setGeneraliste(g);
-        } else {
-            // try to get generaliste from session user
-            HttpSession session = req.getSession(false);
-            if (session != null) {
-                Object userObj = session.getAttribute("user");
-                if (userObj instanceof Generaliste) {
-                    c.setGeneraliste((Generaliste) userObj);
-                }
-            }
-        }
+        Long pid = Long.parseLong(patientIdStr);
+        Patient patient = patientService.getPatientById(pid);
 
-        consultationService.createConsultation(c);
-        resp.sendRedirect(req.getContextPath() + "/jsp/dashboard_generaliste.jsp");
+        HttpSession session = req.getSession(false);
+        Generaliste generaliste = (session != null && session.getAttribute("user") instanceof Generaliste)
+                ? (Generaliste) session.getAttribute("user")
+                : null;
+
+        Consultation consultation = new Consultation();
+        consultation.setPatient(patient);
+        consultation.setGeneraliste(generaliste);
+        consultation.setMotif(motif);
+        consultation.setObservations(observations);
+        consultation.setCout(150.0);
+        consultation.setStatut("EN_COURS");
+        consultation.setDateConsultation(LocalDateTime.now());
+
+        consultationService.createConsultation(consultation);
+
+        resp.sendRedirect(req.getContextPath() + "/dashboard/generaliste");
     }
 }
