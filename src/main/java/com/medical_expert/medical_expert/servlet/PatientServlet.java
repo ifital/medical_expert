@@ -7,8 +7,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet("/patients")
 public class PatientServlet extends HttpServlet {
@@ -16,37 +19,95 @@ public class PatientServlet extends HttpServlet {
     private final PatientService patientService = new PatientService();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String action = req.getParameter("action");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-        if (action == null || action.equals("list")) {
-            // 📋 Liste des patients
-            List<Patient> patients = patientService.getAllPatients();
-            req.setAttribute("patients", patients);
-            req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
-        }
-        else if (action.equals("edit")) {
-            // ✏️ Préparer les données d’un patient pour édition
-            Long id = Long.parseLong(req.getParameter("id"));
-            Patient patient = patientService.getPatientById(id);
-            req.setAttribute("patientToEdit", patient);
-            req.setAttribute("patients", patientService.getAllPatients());
-            req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
-        }
-        else if (action.equals("delete")) {
-            // 🗑️ Supprimer un patient
-            Long id = Long.parseLong(req.getParameter("id"));
-            patientService.deletePatientById(id);
-            resp.sendRedirect(req.getContextPath() + "/patients?action=list");
+        String action = req.getParameter("action");
+        if (action == null) action = "list";
+
+        switch (action) {
+            case "edit":
+                preparerEdition(req, resp);
+                break;
+            case "delete":
+                supprimerPatient(req, resp);
+                break;
+            case "filter":
+                filtrerParDate(req, resp);
+                break;
+            default:
+                afficherPatients(req, resp);
+                break;
         }
     }
 
+    // ✅ Liste triée des patients par date/heure d’arrivée (du plus récent au plus ancien)
+    private void afficherPatients(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        List<Patient> patients = patientService.getAllPatients();
+
+        // 👉 Tri du plus récent au plus ancien
+        patients.sort(Comparator.comparing(Patient::getDateArrivee).reversed());
+
+        req.setAttribute("patients", patients);
+        req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
+    }
+
+    // ✅ Préparer les données d’un patient pour édition
+    private void preparerEdition(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        Long id = Long.parseLong(req.getParameter("id"));
+        Patient patient = patientService.getPatientById(id);
+        List<Patient> patients = patientService.getAllPatients()
+                .stream()
+                .sorted(Comparator.comparing(Patient::getDateArrivee).reversed())
+                .collect(Collectors.toList());
+
+        req.setAttribute("patientToEdit", patient);
+        req.setAttribute("patients", patients);
+        req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
+    }
+
+    // ✅ Supprimer un patient
+    private void supprimerPatient(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        Long id = Long.parseLong(req.getParameter("id"));
+        patientService.deletePatientById(id);
+        resp.sendRedirect(req.getContextPath() + "/patients?action=list");
+    }
+
+    // ✅ Filtrage des patients par date d’arrivée (utilisation de Stream API)
+    private void filtrerParDate(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String dateParam = req.getParameter("date");
+        List<Patient> patients = patientService.getAllPatients();
+
+        if (dateParam != null && !dateParam.isEmpty()) {
+            LocalDate dateRecherche = LocalDate.parse(dateParam);
+
+            // Utilisation de Stream API pour filtrer
+            patients = patients.stream()
+                    .filter(p -> p.getDateArrivee().toLocalDate().equals(dateRecherche))
+                    .sorted(Comparator.comparing(Patient::getDateArrivee).reversed())
+                    .collect(Collectors.toList());
+        } else {
+            patients.sort(Comparator.comparing(Patient::getDateArrivee).reversed());
+        }
+
+        req.setAttribute("patients", patients);
+        req.setAttribute("dateRecherche", dateParam);
+        req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
+    }
+
+    // ✅ Création ou mise à jour d’un patient
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
 
-        // ➕ Ajout ou ✏️ Mise à jour
         String nom = req.getParameter("nom");
         String prenom = req.getParameter("prenom");
         String numSS = req.getParameter("numeroSecuriteSociale");
@@ -62,7 +123,6 @@ public class PatientServlet extends HttpServlet {
         double taille = parseDouble(req.getParameter("taille"));
 
         if ("update".equals(action)) {
-            // 🔄 Mise à jour d’un patient existant
             Long id = Long.parseLong(req.getParameter("id"));
             Patient p = patientService.getPatientById(id);
             if (p != null) {
@@ -81,7 +141,6 @@ public class PatientServlet extends HttpServlet {
                 patientService.updatePatient(p);
             }
         } else {
-            // ➕ Création d’un nouveau patient
             Patient p = new Patient();
             p.setNom(nom);
             p.setPrenom(prenom);
@@ -96,10 +155,10 @@ public class PatientServlet extends HttpServlet {
             p.setFrequenceRespiratoire(frequenceRespiratoire);
             p.setPoids(poids);
             p.setTaille(taille);
-
             patientService.createPatient(p);
         }
 
+        // ✅ Redirection vers la servlet avec action=list
         resp.sendRedirect(req.getContextPath() + "/patients?action=list");
     }
 

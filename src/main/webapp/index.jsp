@@ -32,7 +32,7 @@
     <button type="submit">S'inscrire</button>
 </form>
 
-<p>Déjà un compte ? <a href="login.jsp">Se connecter</a></p>
+<p>Déjà un compte ? <a href="../login">Se connecter</a></p>
 
 <p style="color:red;">${error}</p>
 <p style="color:green;">${message}</p>
