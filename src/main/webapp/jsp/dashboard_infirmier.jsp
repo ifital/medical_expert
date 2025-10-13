@@ -5,197 +5,151 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Infirmier</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f5f8fa;
-        }
-        h2 {
-            color: #0077b6;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        th {
-            background: #0077b6;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background: #f1f1f1;
-        }
-        form {
-            margin: 20px 0;
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        label {
-            font-weight: bold;
-        }
-        input {
-            padding: 6px;
-            margin: 5px 0;
-            width: 250px;
-        }
-        button {
-            padding: 8px 14px;
-            background-color: #0077b6;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #005f87;
-        }
-        a {
-            color: #0077b6;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .actions a {
-            margin: 0 5px;
-        }
-        .filter-section {
-            margin-bottom: 20px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 font-sans p-6">
 
-<h2>Bienvenue, Infirmier ${sessionScope.user.nom}</h2>
+<h2 class="text-2xl font-bold text-blue-700 mb-6">Bienvenue, Infirmier ${sessionScope.user.nom}</h2>
 
-<!-- 🔍 Filtrage par date d’arrivée -->
-<div class="filter-section">
-    <form action="${pageContext.request.contextPath}/patients" method="get">
+<!-- Filtrage par date d’arrivée -->
+<div class="mb-6">
+    <form action="${pageContext.request.contextPath}/patients" method="get" class="flex items-center gap-2">
         <input type="hidden" name="action" value="filter">
-        <label for="date">Filtrer par date d’arrivée :</label>
-        <input type="date" name="date" id="date" value="${dateRecherche}">
-        <button type="submit">Filtrer</button>
-        <a href="${pageContext.request.contextPath}/patients?action=list">Réinitialiser</a>
+        <label for="date" class="font-semibold">Filtrer par date d’arrivée :</label>
+        <input type="date" name="date" id="date" value="${dateRecherche}" class="border border-gray-300 rounded px-2 py-1">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-800">Filtrer</button>
+        <a href="${pageContext.request.contextPath}/patients?action=list" class="text-blue-600 hover:underline">Réinitialiser</a>
     </form>
 </div>
 
-<!-- 📋 Tableau des patients -->
-<h3>Liste des Patients (triés du plus ancien au plus récent)</h3>
-<table>
+<!-- Tableau des patients -->
+<h3 class="text-xl font-semibold mb-2">Liste des Patients (triés du plus ancien au plus récent)</h3>
+<table class="min-w-full bg-white shadow rounded overflow-hidden">
+    <thead class="bg-blue-600 text-white">
     <tr>
-        <th>ID</th>
-        <th>Nom</th>
-        <th>Prénom</th>
-        <th>Téléphone</th>
-        <th>Mutuelle</th>
-        <th>Tension</th>
-        <th>Température</th>
-        <th>Fréquence Cardiaque</th>
-        <th>Fréquence Respiratoire</th>
-        <th>Poids</th>
-        <th>Taille</th>
-        <th>Date d’arrivée</th>
-        <th>Actions</th>
+        <th class="p-2">ID</th>
+        <th class="p-2">Nom</th>
+        <th class="p-2">Prénom</th>
+        <th class="p-2">Téléphone</th>
+        <th class="p-2">Mutuelle</th>
+        <th class="p-2">Tension</th>
+        <th class="p-2">Température</th>
+        <th class="p-2">Fréquence Cardiaque</th>
+        <th class="p-2">Fréquence Respiratoire</th>
+        <th class="p-2">Poids</th>
+        <th class="p-2">Taille</th>
+        <th class="p-2">Date d’arrivée</th>
+        <th class="p-2">Actions</th>
     </tr>
+    </thead>
+    <tbody>
     <c:forEach var="p" items="${patients}">
-        <tr>
-            <td>${p.id}</td>
-            <td>${p.nom}</td>
-            <td>${p.prenom}</td>
-            <td>${p.telephone}</td>
-            <td>${p.mutuelle}</td>
-            <td>${p.tension}</td>
-            <td>${p.temperature}</td>
-            <td>${p.frequenceCardiaque}</td>
-            <td>${p.frequenceRespiratoire}</td>
-            <td>${p.poids}</td>
-            <td>${p.taille}</td>
-            <td>
-                <fmt:formatDate value="${p.dateArrivee}" pattern="yyyy-MM-dd HH:mm:ss"/>
-            </td>
-            <td class="actions">
-                <a href="${pageContext.request.contextPath}/patients?action=edit&id=${p.id}">Modifier</a> |
+        <tr class="text-center border-b hover:bg-gray-50">
+            <td class="p-2">${p.id}</td>
+            <td class="p-2">${p.nom}</td>
+            <td class="p-2">${p.prenom}</td>
+            <td class="p-2">${p.telephone}</td>
+            <td class="p-2">${p.mutuelle}</td>
+            <td class="p-2">${p.tension}</td>
+            <td class="p-2">${p.temperature}</td>
+            <td class="p-2">${p.frequenceCardiaque}</td>
+            <td class="p-2">${p.frequenceRespiratoire}</td>
+            <td class="p-2">${p.poids}</td>
+            <td class="p-2">${p.taille}</td>
+            <td class="p-2">${p.dateArrivee}</td>
+            <td class="p-2 space-x-2">
+                <button
+                        class="text-blue-600 hover:underline"
+                        onclick="openModal(${p.id}, '${p.nom}', '${p.prenom}', '${p.numeroSecuriteSociale}', '${p.telephone}', '${p.adresse}', '${p.mutuelle}', ${p.tension}, ${p.temperature}, ${p.frequenceCardiaque}, ${p.frequenceRespiratoire}, ${p.poids}, ${p.taille})">
+                    Modifier
+                </button>
+                |
                 <a href="${pageContext.request.contextPath}/patients?action=delete&id=${p.id}"
-                   onclick="return confirm('Voulez-vous vraiment supprimer ce patient ?');">
+                   onclick="return confirm('Voulez-vous vraiment supprimer ce patient ?');"
+                   class="text-red-600 hover:underline">
                     Supprimer
                 </a>
             </td>
         </tr>
     </c:forEach>
+    </tbody>
 </table>
 
-<!-- 🧾 Formulaire d’ajout / modification -->
-<h3>
-    <c:choose>
-        <c:when test="${not empty patientToEdit}">Modifier un patient</c:when>
-        <c:otherwise>Ajouter un patient</c:otherwise>
-    </c:choose>
-</h3>
-
-<form action="${pageContext.request.contextPath}/patients" method="post">
-    <c:if test="${not empty patientToEdit}">
-        <input type="hidden" name="action" value="update">
-        <input type="hidden" name="id" value="${patientToEdit.id}">
-    </c:if>
-    <c:if test="${empty patientToEdit}">
-        <input type="hidden" name="action" value="add">
-    </c:if>
-
-    <label>Nom :</label><br>
-    <input type="text" name="nom" value="${patientToEdit.nom}" required><br>
-
-    <label>Prénom :</label><br>
-    <input type="text" name="prenom" value="${patientToEdit.prenom}" required><br>
-
-    <label>Numéro Sécu :</label><br>
-    <input type="text" name="numeroSecuriteSociale" value="${patientToEdit.numeroSecuriteSociale}"><br>
-
-    <label>Téléphone :</label><br>
-    <input type="text" name="telephone" value="${patientToEdit.telephone}"><br>
-
-    <label>Adresse :</label><br>
-    <input type="text" name="adresse" value="${patientToEdit.adresse}"><br>
-
-    <label>Mutuelle :</label><br>
-    <input type="text" name="mutuelle" value="${patientToEdit.mutuelle}"><br>
-
-    <label>Tension :</label><br>
-    <input type="number" step="0.1" name="tension" value="${patientToEdit.tension}"><br>
-
-    <label>Température :</label><br>
-    <input type="number" step="0.1" name="temperature" value="${patientToEdit.temperature}"><br>
-
-    <label>Fréquence cardiaque :</label><br>
-    <input type="number" name="frequenceCardiaque" value="${patientToEdit.frequenceCardiaque}"><br>
-
-    <label>Fréquence respiratoire :</label><br>
-    <input type="number" name="frequenceRespiratoire" value="${patientToEdit.frequenceRespiratoire}"><br>
-
-    <label>Poids :</label><br>
-    <input type="number" step="0.1" name="poids" value="${patientToEdit.poids}"><br>
-
-    <label>Taille :</label><br>
-    <input type="number" step="0.1" name="taille" value="${patientToEdit.taille}"><br>
-
-    <button type="submit">
-        <c:choose>
-            <c:when test="${not empty patientToEdit}">Mettre à jour</c:when>
-            <c:otherwise>Ajouter</c:otherwise>
-        </c:choose>
+<!-- Bouton Ajouter -->
+<div class="mt-4">
+    <button onclick="openModal(0)" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-800">
+        Ajouter un patient
     </button>
-</form>
+</div>
 
-<!-- 🔚 Déconnexion -->
-<p><a href="logout">Déconnexion</a></p>
+<!-- Modal Formulaire -->
+<div id="patientModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-96 p-6 relative">
+        <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+        <h3 class="text-lg font-semibold mb-4" id="modalTitle">Ajouter un patient</h3>
+        <form action="${pageContext.request.contextPath}/patients" method="post" class="flex flex-col gap-2">
+            <input type="hidden" name="action" id="formAction" value="add">
+            <input type="hidden" name="id" id="patientId">
+
+            <input type="text" name="nom" id="nom" placeholder="Nom" class="border border-gray-300 rounded px-2 py-1">
+            <input type="text" name="prenom" id="prenom" placeholder="Prénom" class="border border-gray-300 rounded px-2 py-1">
+            <input type="text" name="numeroSecuriteSociale" id="numeroSecuriteSociale" placeholder="Numéro Sécu" class="border border-gray-300 rounded px-2 py-1">
+            <input type="text" name="telephone" id="telephone" placeholder="Téléphone" class="border border-gray-300 rounded px-2 py-1">
+            <input type="text" name="adresse" id="adresse" placeholder="Adresse" class="border border-gray-300 rounded px-2 py-1">
+            <input type="text" name="mutuelle" id="mutuelle" placeholder="Mutuelle" class="border border-gray-300 rounded px-2 py-1">
+            <input type="number" step="0.1" name="tension" id="tension" placeholder="Tension" class="border border-gray-300 rounded px-2 py-1">
+            <input type="number" step="0.1" name="temperature" id="temperature" placeholder="Température" class="border border-gray-300 rounded px-2 py-1">
+            <input type="number" name="frequenceCardiaque" id="frequenceCardiaque" placeholder="Fréquence cardiaque" class="border border-gray-300 rounded px-2 py-1">
+            <input type="number" name="frequenceRespiratoire" id="frequenceRespiratoire" placeholder="Fréquence respiratoire" class="border border-gray-300 rounded px-2 py-1">
+            <input type="number" step="0.1" name="poids" id="poids" placeholder="Poids" class="border border-gray-300 rounded px-2 py-1">
+            <input type="number" step="0.1" name="taille" id="taille" placeholder="Taille" class="border border-gray-300 rounded px-2 py-1">
+
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 mt-2" id="submitButton">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<p class="mt-6"><a href="logout" class="text-red-600 hover:underline">Déconnexion</a></p>
+
+<script>
+    const modal = document.getElementById('patientModal');
+    const formAction = document.getElementById('formAction');
+    const modalTitle = document.getElementById('modalTitle');
+    const submitButton = document.getElementById('submitButton');
+
+    function openModal(id, nom='', prenom='', numeroSecuriteSociale='', telephone='', adresse='', mutuelle='', tension='', temperature='', frequenceCardiaque='', frequenceRespiratoire='', poids='', taille='') {
+        modal.classList.remove('hidden');
+
+        // Remplissage du formulaire
+        document.getElementById('patientId').value = id;
+        document.getElementById('nom').value = nom;
+        document.getElementById('prenom').value = prenom;
+        document.getElementById('numeroSecuriteSociale').value = numeroSecuriteSociale;
+        document.getElementById('telephone').value = telephone;
+        document.getElementById('adresse').value = adresse;
+        document.getElementById('mutuelle').value = mutuelle;
+        document.getElementById('tension').value = tension;
+        document.getElementById('temperature').value = temperature;
+        document.getElementById('frequenceCardiaque').value = frequenceCardiaque;
+        document.getElementById('frequenceRespiratoire').value = frequenceRespiratoire;
+        document.getElementById('poids').value = poids;
+        document.getElementById('taille').value = taille;
+
+        if(id > 0){
+            formAction.value = 'update';
+            modalTitle.innerText = 'Modifier un patient';
+            submitButton.innerText = 'Mettre à jour';
+        } else {
+            formAction.value = 'add';
+            modalTitle.innerText = 'Ajouter un patient';
+            submitButton.innerText = 'Ajouter';
+        }
+    }
+
+    function closeModal() {
+        modal.classList.add('hidden');
+    }
+</script>
 
 </body>
 </html>

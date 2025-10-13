@@ -41,19 +41,17 @@ public class PatientServlet extends HttpServlet {
         }
     }
 
-    // ✅ Liste triée des patients par date/heure d’arrivée (du plus récent au plus ancien)
+    // ✅ Afficher la liste des patients triés du plus récent au plus ancien
     private void afficherPatients(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         List<Patient> patients = patientService.getAllPatients();
 
-        // 👉 Tri du plus récent au plus ancien
         patients.sort(Comparator.comparing(Patient::getDateArrivee).reversed());
-
         req.setAttribute("patients", patients);
         req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
     }
 
-    // ✅ Préparer les données d’un patient pour édition
+    // ✅ Préparer l'édition
     private void preparerEdition(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Long id = Long.parseLong(req.getParameter("id"));
@@ -76,7 +74,7 @@ public class PatientServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/patients?action=list");
     }
 
-    // ✅ Filtrage des patients par date d’arrivée (utilisation de Stream API)
+    // ✅ Filtrer par date avec Stream API + mise à jour directe de la liste
     private void filtrerParDate(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -85,8 +83,6 @@ public class PatientServlet extends HttpServlet {
 
         if (dateParam != null && !dateParam.isEmpty()) {
             LocalDate dateRecherche = LocalDate.parse(dateParam);
-
-            // Utilisation de Stream API pour filtrer
             patients = patients.stream()
                     .filter(p -> p.getDateArrivee().toLocalDate().equals(dateRecherche))
                     .sorted(Comparator.comparing(Patient::getDateArrivee).reversed())
@@ -100,7 +96,7 @@ public class PatientServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
     }
 
-    // ✅ Création ou mise à jour d’un patient
+    // ✅ Création ou mise à jour directe d’un patient (sans redirect)
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -158,8 +154,14 @@ public class PatientServlet extends HttpServlet {
             patientService.createPatient(p);
         }
 
-        // ✅ Redirection vers la servlet avec action=list
-        resp.sendRedirect(req.getContextPath() + "/patients?action=list");
+        // ✅ Afficher directement la liste mise à jour (sans reload manuel)
+        List<Patient> patients = patientService.getAllPatients()
+                .stream()
+                .sorted(Comparator.comparing(Patient::getDateArrivee).reversed())
+                .collect(Collectors.toList());
+
+        req.setAttribute("patients", patients);
+        req.getRequestDispatcher("/jsp/dashboard_infirmier.jsp").forward(req, resp);
     }
 
     private double parseDouble(String value) {
