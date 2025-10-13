@@ -83,7 +83,7 @@
 </div>
 
 <!-- Modal Formulaire -->
-<div id="patientModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+<div id="patientModal" class="fixed inset-0 m-auto bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg w-96 p-6 relative">
         <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
         <h3 class="text-lg font-semibold mb-4" id="modalTitle">Ajouter un patient</h3>
