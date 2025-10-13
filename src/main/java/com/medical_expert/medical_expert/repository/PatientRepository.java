@@ -39,11 +39,13 @@ public class PatientRepository {
         em.close();
     }
 
-    public void delete(Patient patient) {
+    public void deleteById(Long id) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
-        em.remove(em.contains(patient) ? patient : em.merge(patient));
+        Patient p = em.find(Patient.class, id);
+        if (p != null) em.remove(p);
         em.getTransaction().commit();
         em.close();
     }
+
 }

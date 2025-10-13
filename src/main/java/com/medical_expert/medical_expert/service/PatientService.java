@@ -25,7 +25,8 @@ public class PatientService {
         patientRepo.update(patient);
     }
 
-    public void deletePatient(Patient patient) {
-        patientRepo.delete(patient);
+    public void deletePatientById(Long id) {
+        patientRepo.deleteById(id);
     }
+
 }
