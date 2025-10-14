@@ -9,21 +9,23 @@
 </head>
 <body class="bg-gray-100 font-sans p-6">
 
-<h2 class="text-2xl font-bold text-blue-700 mb-6">Bienvenue, Infirmier ${sessionScope.user.nom}</h2>
+<h2 class="text-2xl font-bold text-blue-700 mb-6">
+    Bienvenue, Infirmier ${sessionScope.user.nom}
+</h2>
 
 <!-- Filtrage par date d’arrivée -->
 <div class="mb-6">
-    <form action="${pageContext.request.contextPath}/patients" method="get" class="flex items-center gap-2">
+    <form action="${pageContext.request.contextPath}/dashboard/infirmier" method="get" class="flex items-center gap-2">
         <input type="hidden" name="action" value="filter">
         <label for="date" class="font-semibold">Filtrer par date d’arrivée :</label>
         <input type="date" name="date" id="date" value="${dateRecherche}" class="border border-gray-300 rounded px-2 py-1">
         <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-800">Filtrer</button>
-        <a href="${pageContext.request.contextPath}/patients?action=list" class="text-blue-600 hover:underline">Réinitialiser</a>
+        <a href="${pageContext.request.contextPath}/dashboard/infirmier?action=list" class="text-blue-600 hover:underline">Réinitialiser</a>
     </form>
 </div>
 
 <!-- Tableau des patients -->
-<h3 class="text-xl font-semibold mb-2">Liste des Patients (triés du plus ancien au plus récent)</h3>
+<h3 class="text-xl font-semibold mb-2">Liste des Patients (triés du plus récent au plus ancien)</h3>
 <table class="min-w-full bg-white shadow rounded overflow-hidden">
     <thead class="bg-blue-600 text-white">
     <tr>
@@ -64,7 +66,7 @@
                     Modifier
                 </button>
                 |
-                <a href="${pageContext.request.contextPath}/patients?action=delete&id=${p.id}"
+                <a href="${pageContext.request.contextPath}/dashboard/infirmier?action=delete&id=${p.id}"
                    onclick="return confirm('Voulez-vous vraiment supprimer ce patient ?');"
                    class="text-red-600 hover:underline">
                     Supprimer
@@ -87,7 +89,7 @@
     <div class="bg-white rounded-lg shadow-lg w-96 p-6 relative">
         <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
         <h3 class="text-lg font-semibold mb-4" id="modalTitle">Ajouter un patient</h3>
-        <form action="${pageContext.request.contextPath}/patients" method="post" class="flex flex-col gap-2">
+        <form action="${pageContext.request.contextPath}/dashboard/infirmier" method="post" class="flex flex-col gap-2">
             <input type="hidden" name="action" id="formAction" value="add">
             <input type="hidden" name="id" id="patientId">
 
@@ -109,7 +111,9 @@
     </div>
 </div>
 
-<p class="mt-6"><a href="logout" class="text-red-600 hover:underline">Déconnexion</a></p>
+<p class="mt-6">
+    <a href="${pageContext.request.contextPath}/logout" class="text-red-600 hover:underline">Déconnexion</a>
+</p>
 
 <script>
     const modal = document.getElementById('patientModal');
@@ -120,7 +124,6 @@
     function openModal(id, nom='', prenom='', numeroSecuriteSociale='', telephone='', adresse='', mutuelle='', tension='', temperature='', frequenceCardiaque='', frequenceRespiratoire='', poids='', taille='') {
         modal.classList.remove('hidden');
 
-        // Remplissage du formulaire
         document.getElementById('patientId').value = id;
         document.getElementById('nom').value = nom;
         document.getElementById('prenom').value = prenom;
