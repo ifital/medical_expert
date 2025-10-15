@@ -2,7 +2,6 @@ package com.medical_expert.medical_expert.servlet;
 
 import com.medical_expert.medical_expert.model.User;
 import com.medical_expert.medical_expert.service.UserService;
-import com.medical_expert.medical_expert.util.BCryptUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -38,11 +37,8 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        // Hash du mot de passe
-        String hashedPassword = BCryptUtil.hashPassword(password);
-
-        // Création de l’utilisateur
-        User user = new User(username, hashedPassword, role, nom, prenom, email);
+        // Création de l’utilisateur avec mot de passe en clair
+        User user = new User(username, password, role, nom, prenom, email);
 
         // Enregistrement
         userService.save(user);

@@ -5,7 +5,6 @@ import com.medical_expert.medical_expert.util.JpaUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-import org.mindrot.jbcrypt.BCrypt;
 
 public class AuthService {
 
@@ -18,8 +17,8 @@ public class AuthService {
 
             User user = query.getSingleResult();
 
-            // Vérification du mot de passe
-            if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+            // Vérification du mot de passe en clair
+            if (user != null && user.getPassword().equals(password)) {
                 return user;
             }
             return null;
