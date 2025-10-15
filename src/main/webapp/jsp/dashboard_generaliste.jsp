@@ -19,13 +19,17 @@
     <!-- 🔹 SECTION CRÉATION DE CONSULTATION -->
     <section class="bg-white p-6 rounded-2xl shadow mb-8">
         <h2 class="text-xl font-semibold mb-4 text-[oklch(78.9%_0.154_211.53)]">Créer une consultation</h2>
-        <form action="/medical_expert_war_exploded/consultations/create" method="post" class="space-y-4">
+        <form action="${pageContext.request.contextPath}/consultations/add" method="post" class="space-y-4">
+
+            <!-- Gestion erreur -->
+            <c:if test="${not empty error}">
+                <p class="text-red-500 mb-2">${error}</p>
+            </c:if>
 
             <!-- Sélection du patient -->
             <div>
                 <label class="block text-sm font-medium mb-1">Patient :</label>
-                <select name="patientId" required
-                        class="w-full p-2 border border-gray-300 rounded">
+                <select name="patientId" required class="w-full p-2 border border-gray-300 rounded">
                     <option value="">-- Sélectionner un patient --</option>
                     <c:forEach var="p" items="${patients}">
                         <option value="${p.id}">${p.nom} ${p.prenom}</option>
@@ -36,8 +40,7 @@
             <!-- Motif -->
             <div>
                 <label class="block text-sm font-medium mb-1">Motif de consultation :</label>
-                <input type="text" name="motif" required
-                       class="w-full p-2 border border-gray-300 rounded">
+                <input type="text" name="motif" required class="w-full p-2 border border-gray-300 rounded">
             </div>
 
             <!-- Observations -->
@@ -52,11 +55,11 @@
                 <input type="hidden" name="cout" value="150">
             </div>
 
-            <button type="submit"
-                    class="bg-[oklch(78.9%_0.154_211.53)] text-white px-4 py-2 rounded hover:opacity-90">
+            <button type="submit" class="bg-[oklch(78.9%_0.154_211.53)] text-white px-4 py-2 rounded hover:opacity-90">
                 Enregistrer la consultation
             </button>
         </form>
+
     </section>
 
     <!-- 🔹 SECTION DEMANDE D’EXPERTISE -->
