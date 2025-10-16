@@ -4,7 +4,6 @@ import com.medical_expert.medical_expert.model.Consultation;
 import com.medical_expert.medical_expert.model.Generaliste;
 import com.medical_expert.medical_expert.model.Patient;
 import com.medical_expert.medical_expert.service.ConsultationService;
-import com.medical_expert.medical_expert.service.MedecinService;
 import com.medical_expert.medical_expert.service.PatientService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
