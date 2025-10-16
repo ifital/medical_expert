@@ -40,4 +40,50 @@ public class DemandeExpertiseServlet extends HttpServlet {
         // Redirection vers la JSP de consultation
         request.getRequestDispatcher("/jsp/dashboard_specialiste.jsp").forward(request, response);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Récupération des paramètres du formulaire
+        String consultationIdStr = request.getParameter("consultationId");
+        String specialisteIdStr = request.getParameter("specialisteId");
+        String question = request.getParameter("question");
+        String priorite = request.getParameter("priorite");
+
+        try {
+            Long consultationId = Long.parseLong(consultationIdStr);
+            Long specialisteId = Long.parseLong(specialisteIdStr);
+
+            // Création de la demande d'expertise
+            DemandeExpertise demande = new DemandeExpertise();
+
+            // Création des objets Consultation et Specialiste avec juste l'ID
+            // (supposé que ton repository gère les relations via JPA)
+            com.medical_expert.medical_expert.model.Consultation consultation =
+                    new com.medical_expert.medical_expert.model.Consultation();
+            consultation.setId(consultationId);
+
+            com.medical_expert.medical_expert.model.Specialiste specialiste =
+                    new com.medical_expert.medical_expert.model.Specialiste();
+            specialiste.setId(specialisteId);
+
+            demande.setConsultation(consultation);
+            demande.setSpecialiste(specialiste);
+            demande.setQuestion(question);
+            demande.setPriorite(priorite);
+
+            // Le statut par défaut "EN_ATTENTE" est déjà défini dans l'entité
+            expertiseService.createDemande(demande);
+
+            // Redirection vers la liste des demandes après insertion
+            response.sendRedirect(request.getContextPath() + "/dashboard/generaliste");
+
+        } catch (NumberFormatException e) {
+            // Gestion simple des erreurs de parsing
+            request.setAttribute("error", "ID consultation ou spécialiste invalide.");
+            request.getRequestDispatcher("/jsp/formulaire_demande.jsp").forward(request, response);
+        }
+    }
+
 }
