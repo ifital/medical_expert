@@ -13,6 +13,7 @@
         <class>com.medical_expert.medical_expert.model.Consultation</class>
         <class>com.medical_expert.medical_expert.model.DemandeExpertise</class>
         <class>com.medical_expert.medical_expert.model.ActeTechnique</class>
+        <class>com.medical_expert.medical_expert.model.Creneau</class> <!-- Ajouté -->
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>

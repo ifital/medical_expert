@@ -1,6 +1,12 @@
 package com.medical_expert.medical_expert.servlet;
 
+import com.medical_expert.medical_expert.model.Creneau;
 import com.medical_expert.medical_expert.model.DemandeExpertise;
+import com.medical_expert.medical_expert.model.Specialiste;
+import com.medical_expert.medical_expert.model.Consultation;
+import com.medical_expert.medical_expert.repository.CreneauRepository;
+import com.medical_expert.medical_expert.repository.SpecialisteRepository;
+import com.medical_expert.medical_expert.repository.ConsultationRepository;
 import com.medical_expert.medical_expert.service.ExpertiseService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,14 +22,17 @@ import java.util.stream.Collectors;
 public class DemandeExpertiseServlet extends HttpServlet {
 
     private final ExpertiseService expertiseService = new ExpertiseService();
+    private final CreneauRepository creneauRepo = new CreneauRepository();
+    private final SpecialisteRepository specialisteRepo = new SpecialisteRepository();
+    private final ConsultationRepository consultationRepo = new ConsultationRepository();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         // Récupération des paramètres de filtrage
-        String statutParam = request.getParameter("statut"); // EN_ATTENTE, TERMINEE
-        String prioriteParam = request.getParameter("priorite"); // ex: HAUTE, NORMALE, BASSE
+        String statutParam = request.getParameter("statut");
+        String prioriteParam = request.getParameter("priorite");
 
         // Récupération de toutes les demandes
         List<DemandeExpertise> allDemandes = expertiseService.getAllDemandes();
@@ -34,10 +43,9 @@ public class DemandeExpertiseServlet extends HttpServlet {
                 .filter(d -> (prioriteParam == null || d.getPriorite().equalsIgnoreCase(prioriteParam)))
                 .collect(Collectors.toList());
 
-        // Ajout de la liste filtrée en attribut pour JSP
         request.setAttribute("demandes", filteredDemandes);
 
-        // Redirection vers la JSP de consultation
+        // Redirection vers la JSP
         request.getRequestDispatcher("/jsp/dashboard_specialiste.jsp").forward(request, response);
     }
 
@@ -45,45 +53,50 @@ public class DemandeExpertiseServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Récupération des paramètres du formulaire
-        String consultationIdStr = request.getParameter("consultationId");
-        String specialisteIdStr = request.getParameter("specialisteId");
-        String question = request.getParameter("question");
-        String priorite = request.getParameter("priorite");
-
         try {
-            Long consultationId = Long.parseLong(consultationIdStr);
-            Long specialisteId = Long.parseLong(specialisteIdStr);
+            Long consultationId = Long.parseLong(request.getParameter("consultationId"));
+            Long specialisteId = Long.parseLong(request.getParameter("specialisteId"));
+            Long creneauId = Long.parseLong(request.getParameter("creneauId"));
+            String question = request.getParameter("question");
+            String priorite = request.getParameter("priorite");
 
-            // Création de la demande d'expertise
+            // Récupération depuis la BDD
+            Consultation consultation = consultationRepo.findById(consultationId);
+            Specialiste specialiste = specialisteRepo.findById(specialisteId);
+            Creneau creneau = creneauRepo.findById(creneauId);
+
+            if (consultation == null || specialiste == null || creneau == null) {
+                request.setAttribute("error", "Consultation, spécialiste ou créneau invalide.");
+                request.getRequestDispatcher("/jsp/formulaire_demande.jsp").forward(request, response);
+                return;
+            }
+
+            if (!creneau.isDisponible()) {
+                request.setAttribute("error", "Ce créneau n'est plus disponible.");
+                request.getRequestDispatcher("/jsp/formulaire_demande.jsp").forward(request, response);
+                return;
+            }
+
+            // Création de la demande
             DemandeExpertise demande = new DemandeExpertise();
-
-            // Création des objets Consultation et Specialiste avec juste l'ID
-            // (supposé que ton repository gère les relations via JPA)
-            com.medical_expert.medical_expert.model.Consultation consultation =
-                    new com.medical_expert.medical_expert.model.Consultation();
-            consultation.setId(consultationId);
-
-            com.medical_expert.medical_expert.model.Specialiste specialiste =
-                    new com.medical_expert.medical_expert.model.Specialiste();
-            specialiste.setId(specialisteId);
-
             demande.setConsultation(consultation);
             demande.setSpecialiste(specialiste);
+            demande.setCreneau(creneau);
             demande.setQuestion(question);
             demande.setPriorite(priorite);
 
-            // Le statut par défaut "EN_ATTENTE" est déjà défini dans l'entité
+            // Bloquer le créneau et mettre à jour BDD
+            creneau.setDisponible(false);
+            creneauRepo.update(creneau);
+
+            // Sauvegarder la demande
             expertiseService.createDemande(demande);
 
-            // Redirection vers la liste des demandes après insertion
             response.sendRedirect(request.getContextPath() + "/dashboard/generaliste");
 
         } catch (NumberFormatException e) {
-            // Gestion simple des erreurs de parsing
-            request.setAttribute("error", "ID consultation ou spécialiste invalide.");
+            request.setAttribute("error", "ID consultation, spécialiste ou créneau invalide.");
             request.getRequestDispatcher("/jsp/formulaire_demande.jsp").forward(request, response);
         }
     }
-
 }
