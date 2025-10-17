@@ -5,10 +5,7 @@ import com.medical_expert.medical_expert.model.User;
 import com.medical_expert.medical_expert.service.SpecialisteService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
@@ -30,20 +27,35 @@ public class ProfilServlet extends HttpServlet {
         Object userObj = session.getAttribute("user");
         Specialiste specialiste = null;
 
-        // Vérifier le type de l’objet dans la session
         if (userObj instanceof Specialiste) {
             specialiste = (Specialiste) userObj;
         } else if (userObj instanceof User) {
             User user = (User) userObj;
-            specialiste = specialisteService.getByUsername(user.getUsername()); // ✅ correction
+            specialiste = specialisteService.getByUsername(user.getUsername());
+
+            // Si l'utilisateur a le rôle SPECIALISTE mais pas encore de profil, le créer
+            if (specialiste == null && "SPECIALISTE".equalsIgnoreCase(user.getRole())) {
+                specialiste = new Specialiste(
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getRole(),
+                        user.getNom(),
+                        user.getPrenom(),
+                        user.getEmail(),
+                        0.0, "" // tarif par défaut et spécialité vide
+                );
+                specialisteService.createSpecialiste(specialiste);
+            }
         }
 
         if (specialiste == null) {
-            request.setAttribute("error", "Impossible de charger le profil du spécialiste.");
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Impossible de charger le profil du spécialiste.");
+            request.setAttribute("error", "Profil introuvable ou rôle non compatible.");
+            request.getRequestDispatcher("/jsp/profil_config.jsp").forward(request, response);
             return;
         }
 
+        // Mettre à jour la session avec l'objet Specialiste
+        session.setAttribute("user", specialiste);
         request.setAttribute("specialiste", specialiste);
         request.getRequestDispatcher("/jsp/profil_config.jsp").forward(request, response);
     }
@@ -65,7 +77,7 @@ public class ProfilServlet extends HttpServlet {
             specialiste = (Specialiste) userObj;
         } else if (userObj instanceof User) {
             User user = (User) userObj;
-            specialiste = specialisteService.getByUsername(user.getUsername()); // ✅ correction
+            specialiste = specialisteService.getByUsername(user.getUsername());
         }
 
         if (specialiste == null) {
@@ -87,7 +99,6 @@ public class ProfilServlet extends HttpServlet {
 
             double tarif = Double.parseDouble(tarifStr);
 
-            // ✅ On appelle la méthode métier dédiée
             boolean updated = specialisteService.updateProfil(specialiste.getId(), tarif, specialite);
 
             if (updated) {

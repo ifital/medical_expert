@@ -1,7 +1,9 @@
 package com.medical_expert.medical_expert.servlet;
 
+import com.medical_expert.medical_expert.model.Specialiste;
 import com.medical_expert.medical_expert.model.User;
 import com.medical_expert.medical_expert.service.AuthService;
+import com.medical_expert.medical_expert.service.SpecialisteService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -10,13 +12,14 @@ import java.io.IOException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+
     private final AuthService authService = new AuthService();
+    private final SpecialisteService specialisteService = new SpecialisteService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        // Si l'utilisateur est déjà connecté, rediriger vers son dashboard
+
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             User user = (User) session.getAttribute("user");
@@ -24,7 +27,6 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // Sinon afficher la page de connexion
         req.getRequestDispatcher("/jsp/login.jsp").forward(req, resp);
     }
 
@@ -36,27 +38,38 @@ public class LoginServlet extends HttpServlet {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
 
-        // Vérification des identifiants
         User user = authService.login(email, password);
 
         if (user != null) {
-            // Création d'une session utilisateur
             HttpSession session = req.getSession(true);
-            session.setAttribute("user", user);
 
-            // Redirection selon rôle
+            if ("SPECIALISTE".equalsIgnoreCase(user.getRole())) {
+                Specialiste specialiste = specialisteService.getByUsername(user.getUsername());
+                if (specialiste == null) {
+                    specialiste = new Specialiste(
+                            user.getUsername(),
+                            user.getPassword(),
+                            user.getRole(),
+                            user.getNom(),
+                            user.getPrenom(),
+                            user.getEmail(),
+                            0.0, "" // tarif par défaut et spécialité vide
+                    );
+                    specialisteService.createSpecialiste(specialiste);
+                }
+                session.setAttribute("user", specialiste);
+            } else {
+                session.setAttribute("user", user);
+            }
+
             redirectByRole(user, req, resp);
 
         } else {
-            // Identifiants invalides
             req.setAttribute("error", "Identifiants invalides. Veuillez réessayer.");
             req.getRequestDispatcher("/jsp/login.jsp").forward(req, resp);
         }
     }
 
-    /**
-     * Redirige l'utilisateur selon son rôle vers le bon dashboard.
-     */
     private void redirectByRole(User user, HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         String role = user.getRole() == null ? "" : user.getRole().toUpperCase();

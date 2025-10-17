@@ -38,47 +38,56 @@
         </div>
     </c:if>
 
-    <div class="bg-white p-8 rounded-3xl shadow-lg scrollable border border-gray-100">
-        <form action="${pageContext.request.contextPath}/profil/config" method="post" class="space-y-6">
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Nom :</label>
-                <input type="text" value="${specialiste.nom}" disabled
-                       class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
-            </div>
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Prénom :</label>
-                <input type="text" value="${specialiste.prenom}" disabled
-                       class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
-            </div>
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Email :</label>
-                <input type="email" value="${specialiste.email}" disabled
-                       class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
-            </div>
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Spécialité :</label>
-                <input type="text" name="specialite" value="${specialiste.specialite}"
-                       class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
-                       placeholder="Ex: Cardiologie" required>
-            </div>
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Tarif (DH) :</label>
-                <input type="number" name="tarif" value="${specialiste.tarif}"
-                       class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
-                       placeholder="Ex: 200" step="0.01" required>
-            </div>
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Durée moyenne consultation :</label>
-                <input type="text" value="${specialiste.dureeConsultation} minutes" disabled
-                       class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
-            </div>
-            <div class="flex justify-end space-x-3 pt-4">
-                <button type="submit" class="btn-primary text-white px-5 py-2 rounded-lg">
-                    Enregistrer
-                </button>
-            </div>
-        </form>
-    </div>
+    <c:if test="${empty specialiste}">
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+            Profil introuvable. Veuillez vous reconnecter.
+        </div>
+    </c:if>
+
+    <c:if test="${not empty specialiste}">
+        <div class="bg-white p-8 rounded-3xl shadow-lg scrollable border border-gray-100">
+            <form action="${pageContext.request.contextPath}/profil/config" method="post" class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Nom :</label>
+                    <input type="text" value="${specialiste.nom}" disabled
+                           class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Prénom :</label>
+                    <input type="text" value="${specialiste.prenom}" disabled
+                           class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Email :</label>
+                    <input type="email" value="${specialiste.email}" disabled
+                           class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Spécialité :</label>
+                    <input type="text" name="specialite" value="${specialiste.specialite}"
+                           class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+                           placeholder="Ex: Cardiologie" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Tarif (DH) :</label>
+                    <input type="number" name="tarif" value="${specialiste.tarif}" min="0"
+                           class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+                           placeholder="Ex: 200" step="0.01" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1 font-medium">Durée moyenne consultation :</label>
+                    <input type="text" value="${specialiste.dureeConsultation} minutes" disabled
+                           class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="submit" class="btn-primary text-white px-5 py-2 rounded-lg">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </c:if>
+
 </div>
 
 </body>
