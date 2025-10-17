@@ -188,44 +188,39 @@
 <!-- SCRIPT CORRIGÉ -->
 <script>
     // Modal Consultation
-    function openModal() {
-        document.getElementById('consultationModal').classList.remove('hidden');
-    }
-    function closeModal() {
-        document.getElementById('consultationModal').classList.add('hidden');
-    }
+    function openModal() { document.getElementById('consultationModal').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('consultationModal').classList.add('hidden'); }
 
     // Modal Expertise
-    function openExpertiseModal() {
-        document.getElementById('expertiseModal').classList.remove('hidden');
-    }
-    function closeExpertiseModal() {
-        document.getElementById('expertiseModal').classList.add('hidden');
-    }
+    function openExpertiseModal() { document.getElementById('expertiseModal').classList.remove('hidden'); }
+    function closeExpertiseModal() { document.getElementById('expertiseModal').classList.add('hidden'); }
 
     // Date actuelle
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    // Gestion dynamique des créneaux - VERSION SIMPLIFIÉE
+    // Créneaux disponibles passés depuis la servlet
+    const creneauxDisponibles = {
+        <c:forEach var="entry" items="${creneauxDisponibles}" varStatus="loopEntry">
+        "${entry.key}": [
+            <c:forEach var="c" items="${entry.value}" varStatus="loop">
+            {id: "${c.id}", debut: "${c.debut.toLocalTime()}", fin: "${c.fin.toLocalTime()}"}<c:if test="${!loop.last}">,</c:if>
+            </c:forEach>
+        ]<c:if test="${!loopEntry.last}">,</c:if>
+        </c:forEach>
+    };
+
+    // Dynamique créneaux
     const specialisteSelect = document.getElementById('specialisteSelect');
     const creneauSelect = document.getElementById('creneauSelect');
 
-    // Version simplifiée pour tester d'abord l'ouverture des modals
     specialisteSelect.addEventListener('change', () => {
         const selectedId = specialisteSelect.value;
         creneauSelect.innerHTML = '<option value="">-- Sélectionnez un créneau --</option>';
 
-        // Pour l'instant, on ajoute juste des options factices pour tester
-        if (selectedId) {
-            const creneauxTest = [
-                {id: '1', debut: '09:00', fin: '10:00'},
-                {id: '2', debut: '10:30', fin: '11:30'},
-                {id: '3', debut: '14:00', fin: '15:00'}
-            ];
-
-            creneauxTest.forEach(c => {
+        if (selectedId && creneauxDisponibles[selectedId]) {
+            creneauxDisponibles[selectedId].forEach(c => {
                 const option = document.createElement('option');
                 option.value = c.id;
                 option.textContent = `${c.debut} → ${c.fin}`;
@@ -234,17 +229,12 @@
         }
     });
 
-    // Fermer les modals en cliquant à l'extérieur
+    // Fermer modals en cliquant à l'extérieur
     document.addEventListener('click', function(event) {
         const consultationModal = document.getElementById('consultationModal');
         const expertiseModal = document.getElementById('expertiseModal');
-
-        if (event.target === consultationModal) {
-            closeModal();
-        }
-        if (event.target === expertiseModal) {
-            closeExpertiseModal();
-        }
+        if (event.target === consultationModal) closeModal();
+        if (event.target === expertiseModal) closeExpertiseModal();
     });
 </script>
 

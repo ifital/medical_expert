@@ -1,8 +1,10 @@
 package com.medical_expert.medical_expert.servlet;
 
 import com.medical_expert.medical_expert.model.Consultation;
+import com.medical_expert.medical_expert.model.Creneau;
 import com.medical_expert.medical_expert.model.Patient;
 import com.medical_expert.medical_expert.model.Specialiste;
+import com.medical_expert.medical_expert.service.CreneauService;
 import com.medical_expert.medical_expert.service.ConsultationService;
 import com.medical_expert.medical_expert.service.MedecinService;
 import com.medical_expert.medical_expert.service.PatientService;
@@ -11,8 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @WebServlet("/dashboard/generaliste")
@@ -21,6 +22,7 @@ public class DashboardGeneralisteServlet extends HttpServlet {
     private final ConsultationService consultationService = new ConsultationService();
     private final MedecinService medecinService = new MedecinService();
     private final PatientService patientService = new PatientService();
+    private final CreneauService creneauService = new CreneauService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -49,10 +51,18 @@ public class DashboardGeneralisteServlet extends HttpServlet {
                     .collect(Collectors.toList());
         }
 
+        // 🔹 Récupération des créneaux disponibles par spécialiste
+        Map<Long, List<Creneau>> creneauxDisponibles = new HashMap<>();
+        for (Specialiste s : specialistes) {
+            List<Creneau> dispo = creneauService.getCreneauxDisponiblesParSpecialiste(s.getId());
+            creneauxDisponibles.put(s.getId(), dispo);
+        }
+
         // 🔹 Envoi des données à la JSP
         req.setAttribute("consultations", consultations);
         req.setAttribute("patients", patients);
         req.setAttribute("specialistes", specialistes);
+        req.setAttribute("creneauxDisponibles", creneauxDisponibles); // ✅
 
         req.getRequestDispatcher("/jsp/dashboard_generaliste.jsp").forward(req, resp);
     }
