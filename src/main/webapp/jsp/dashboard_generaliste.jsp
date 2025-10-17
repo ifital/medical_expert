@@ -134,7 +134,8 @@
 
 <!-- MODAL DEMANDE EXPERTISE -->
 <div id="expertiseModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-3xl shadow-lg p-8 w-full max-w-lg relative">
+    <div class="bg-white rounded-3xl shadow-lg w-full max-w-lg relative
+                max-h-[90vh] overflow-y-auto p-8">
         <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Demander une Expertise</h2>
         <form action="${pageContext.request.contextPath}/expertise/request" method="post" class="space-y-4">
             <div>
@@ -166,6 +167,18 @@
                 <textarea name="question" rows="4" required
                           class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
                           placeholder="Décrivez votre question pour le spécialiste..."></textarea>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-1 font-medium">Recommandations :</label>
+                <textarea name="recommandations" rows="3"
+                          class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+                          placeholder="Recommandations éventuelles..."></textarea>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-1 font-medium">Réponse :</label>
+                <textarea name="reponse" rows="3"
+                          class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+                          placeholder="Réponse du spécialiste (si disponible)..."></textarea>
             </div>
             <div>
                 <label class="block text-gray-700 mb-1 font-medium">Priorité :</label>

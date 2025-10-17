@@ -22,9 +22,9 @@
 
         <select name="priorite" class="border rounded px-2 py-1">
             <option value="">-- Priorité --</option>
-            <option value="URGENTE">Urgente</option>
-            <option value="NORMALE">Normale</option>
-            <option value="NON_URGENTE">Non urgente</option>
+            <option value="Haute">Haute</option>
+            <option value="Moyenne">Moyenne</option>
+            <option value="Basse">Basse</option>
         </select>
 
         <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">

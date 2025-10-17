@@ -59,6 +59,8 @@ public class DemandeExpertiseServlet extends HttpServlet {
             Long creneauId = Long.parseLong(request.getParameter("creneauId"));
             String question = request.getParameter("question");
             String priorite = request.getParameter("priorite");
+            String reponse = request.getParameter("reponse"); // <-- ajouté
+            String recommandations = request.getParameter("recommandations"); // <-- ajouté
 
             // Récupération depuis la BDD
             Consultation consultation = consultationRepo.findById(consultationId);
@@ -83,6 +85,8 @@ public class DemandeExpertiseServlet extends HttpServlet {
             demande.setCreneau(creneau);
             demande.setQuestion(question);
             demande.setPriorite(priorite);
+            demande.setReponse(reponse); // <-- assigné
+            demande.setRecommandations(recommandations); // <-- assigné
 
             // Bloquer le créneau et mettre à jour BDD
             creneau.setDisponible(false);
