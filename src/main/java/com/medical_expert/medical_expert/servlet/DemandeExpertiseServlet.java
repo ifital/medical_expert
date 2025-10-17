@@ -73,7 +73,6 @@ public class DemandeExpertiseServlet extends HttpServlet {
 
             if (!creneau.isDisponible()) {
                 request.setAttribute("error", "Ce créneau n'est plus disponible.");
-                request.getRequestDispatcher("/jsp/formulaire_demande.jsp").forward(request, response);
                 return;
             }
 

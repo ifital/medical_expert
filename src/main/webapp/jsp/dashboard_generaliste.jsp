@@ -22,11 +22,6 @@
             width: 4px; height: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 2px;
         }
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-            display: none; align-items: center; justify-content: center;
-        }
-        .modal.active { display: flex; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 min-h-screen">
@@ -48,10 +43,13 @@
 <!-- CONTENU -->
 <div class="container mx-auto px-6 py-8 max-w-7xl">
 
-    <!-- Bouton pour ouvrir le pop-up -->
-    <div class="flex justify-end mb-6">
+    <!-- Boutons pour ouvrir les modals -->
+    <div class="flex justify-end mb-6 space-x-3">
         <button onclick="openModal()" class="btn-primary text-white px-6 py-2 rounded-lg">
             ➕ Nouvelle consultation
+        </button>
+        <button onclick="openExpertiseModal()" class="btn-primary text-white px-6 py-2 rounded-lg">
+            ➕ Nouvelle demande d'expertise
         </button>
     </div>
 
@@ -82,12 +80,12 @@
                         <td class="py-3 px-4">${c.patient.nom} ${c.patient.prenom}</td>
                         <td class="py-3 px-4">${c.motif}</td>
                         <td class="py-3 px-4">
-                                <span class="px-3 py-1 text-xs rounded-full
-                                    ${c.statut == 'EN_COURS' ? 'bg-yellow-100 text-yellow-700' :
-                                      (c.statut == 'TERMINEE' ? 'bg-green-100 text-green-700' :
-                                      'bg-gray-100 text-gray-700')}">
-                                        ${c.statut}
-                                </span>
+                            <span class="px-3 py-1 text-xs rounded-full
+                                ${c.statut == 'EN_COURS' ? 'bg-yellow-100 text-yellow-700' :
+                                  (c.statut == 'TERMINEE' ? 'bg-green-100 text-green-700' :
+                                  'bg-gray-100 text-gray-700')}">
+                                    ${c.statut}
+                            </span>
                         </td>
                         <td class="py-3 px-4">${c.dateConsultation}</td>
                         <td class="py-3 px-4 font-semibold text-blue-600">${c.cout} DH</td>
@@ -100,61 +98,153 @@
 </div>
 
 <!-- MODAL AJOUT CONSULTATION -->
-<div id="consultationModal" class="modal">
+<div id="consultationModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-white rounded-3xl shadow-lg p-8 w-full max-w-lg relative">
         <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Ajouter une Consultation</h2>
         <form action="${pageContext.request.contextPath}/consultations/add" method="post" class="space-y-4">
-
-            <!-- Patient -->
             <div>
                 <label class="block text-gray-700 mb-1 font-medium">Patient :</label>
-                <select name="patientId" required
-                        class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300">
+                <select name="patientId" required class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300">
                     <option value="">-- Sélectionnez un patient --</option>
                     <c:forEach var="p" items="${patients}">
                         <option value="${p.id}">${p.nom} ${p.prenom}</option>
                     </c:forEach>
                 </select>
             </div>
-
-            <!-- Motif -->
             <div>
                 <label class="block text-gray-700 mb-1 font-medium">Motif :</label>
                 <input type="text" name="motif" required
                        class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
                        placeholder="Ex: Douleur abdominale">
             </div>
-
-            <!-- Observations -->
             <div>
                 <label class="block text-gray-700 mb-1 font-medium">Observations :</label>
                 <textarea name="observations" rows="4"
                           class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
                           placeholder="Notes cliniques..."></textarea>
             </div>
-
-            <!-- Boutons -->
             <div class="flex justify-end space-x-3 pt-4">
-                <button type="button" onclick="closeModal()"
-                        class="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">Annuler</button>
-                <button type="submit"
-                        class="btn-primary text-white px-5 py-2 rounded-lg">Enregistrer</button>
+                <button type="button" onclick="closeModal()" class="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">Annuler</button>
+                <button type="submit" class="btn-primary text-white px-5 py-2 rounded-lg">Enregistrer</button>
             </div>
         </form>
-
-        <!-- Bouton X -->
         <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">&times;</button>
     </div>
 </div>
 
-<!-- SCRIPT -->
-<script>
-    const modal = document.getElementById('consultationModal');
-    function openModal() { modal.classList.add('active'); }
-    function closeModal() { modal.classList.remove('active'); }
+<!-- MODAL DEMANDE EXPERTISE -->
+<div id="expertiseModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-3xl shadow-lg p-8 w-full max-w-lg relative">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Demander une Expertise</h2>
+        <form action="${pageContext.request.contextPath}/expertise/request" method="post" class="space-y-4">
+            <div>
+                <label class="block text-gray-700 mb-1 font-medium">Consultation :</label>
+                <select name="consultationId" required class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300">
+                    <option value="">-- Sélectionnez une consultation --</option>
+                    <c:forEach var="c" items="${consultations}">
+                        <option value="${c.id}">${c.patient.nom} ${c.patient.prenom} - ${c.motif}</option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-1 font-medium">Spécialiste :</label>
+                <select name="specialisteId" id="specialisteSelect" required class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300">
+                    <option value="">-- Sélectionnez un spécialiste --</option>
+                    <c:forEach var="s" items="${specialistes}">
+                        <option value="${s.id}">${s.nom} ${s.prenom} - ${s.specialite}</option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-1 font-medium">Créneau :</label>
+                <select name="creneauId" id="creneauSelect" required class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300">
+                    <option value="">-- Sélectionnez un créneau --</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-1 font-medium">Question :</label>
+                <textarea name="question" rows="4" required
+                          class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
+                          placeholder="Décrivez votre question pour le spécialiste..."></textarea>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-1 font-medium">Priorité :</label>
+                <select name="priorite" required class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300">
+                    <option value="">-- Sélectionnez la priorité --</option>
+                    <option value="HAUTE">Haute</option>
+                    <option value="MOYENNE">Moyenne</option>
+                    <option value="BASSE">Basse</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="closeExpertiseModal()" class="px-5 py-2 rounded-lg border border-gray-300 hover:bg-gray-100">Annuler</button>
+                <button type="submit" class="btn-primary text-white px-5 py-2 rounded-lg">Envoyer la demande</button>
+            </div>
+        </form>
+        <button onclick="closeExpertiseModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+    </div>
+</div>
 
+<!-- SCRIPT CORRIGÉ -->
+<script>
+    // Modal Consultation
+    function openModal() {
+        document.getElementById('consultationModal').classList.remove('hidden');
+    }
+    function closeModal() {
+        document.getElementById('consultationModal').classList.add('hidden');
+    }
+
+    // Modal Expertise
+    function openExpertiseModal() {
+        document.getElementById('expertiseModal').classList.remove('hidden');
+    }
+    function closeExpertiseModal() {
+        document.getElementById('expertiseModal').classList.add('hidden');
+    }
+
+    // Date actuelle
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Gestion dynamique des créneaux - VERSION SIMPLIFIÉE
+    const specialisteSelect = document.getElementById('specialisteSelect');
+    const creneauSelect = document.getElementById('creneauSelect');
+
+    // Version simplifiée pour tester d'abord l'ouverture des modals
+    specialisteSelect.addEventListener('change', () => {
+        const selectedId = specialisteSelect.value;
+        creneauSelect.innerHTML = '<option value="">-- Sélectionnez un créneau --</option>';
+
+        // Pour l'instant, on ajoute juste des options factices pour tester
+        if (selectedId) {
+            const creneauxTest = [
+                {id: '1', debut: '09:00', fin: '10:00'},
+                {id: '2', debut: '10:30', fin: '11:30'},
+                {id: '3', debut: '14:00', fin: '15:00'}
+            ];
+
+            creneauxTest.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = `${c.debut} → ${c.fin}`;
+                creneauSelect.appendChild(option);
+            });
+        }
+    });
+
+    // Fermer les modals en cliquant à l'extérieur
+    document.addEventListener('click', function(event) {
+        const consultationModal = document.getElementById('consultationModal');
+        const expertiseModal = document.getElementById('expertiseModal');
+
+        if (event.target === consultationModal) {
+            closeModal();
+        }
+        if (event.target === expertiseModal) {
+            closeExpertiseModal();
+        }
     });
 </script>
 
