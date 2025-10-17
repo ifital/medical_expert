@@ -3,6 +3,7 @@ package com.medical_expert.medical_expert.service;
 import com.medical_expert.medical_expert.model.Creneau;
 import com.medical_expert.medical_expert.repository.CreneauRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CreneauService {
@@ -44,5 +45,37 @@ public class CreneauService {
     // Récupérer un créneau par son ID
     public Creneau getCreneauParId(Long id) {
         return creneauRepository.findById(id);
+    }
+
+    // Réserver un créneau (si disponible)
+    public boolean reserverCreneau(Long id) {
+        Creneau creneau = creneauRepository.findById(id);
+        if (creneau != null && creneau.isDisponible() && creneau.getFin().isAfter(LocalDateTime.now())) {
+            creneau.setDisponible(false);
+            creneauRepository.update(creneau);
+            return true;
+        }
+        return false;
+    }
+
+    // Annuler une réservation
+    public boolean annulerReservation(Long id) {
+        Creneau creneau = creneauRepository.findById(id);
+        if (creneau != null && !creneau.isDisponible() && creneau.getFin().isAfter(LocalDateTime.now())) {
+            creneau.setDisponible(true);
+            creneauRepository.update(creneau);
+            return true;
+        }
+        return false;
+    }
+
+    // Archiver les créneaux passés
+    public void archiverCreneauxPasses() {
+        List<Creneau> tous = creneauRepository.findAll();
+        for (Creneau c : tous) {
+            if (c.getFin().isBefore(LocalDateTime.now()) && c.isDisponible()) {
+                creneauRepository.delete(c); // ou mettre un flag "archivé"
+            }
+        }
     }
 }

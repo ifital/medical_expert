@@ -33,6 +33,10 @@
            class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100">
             Voir Profil
         </a>
+        <a href="${pageContext.request.contextPath}/mes-creneaux"
+           class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100">
+            Mes Créneaux
+        </a>
         <a href="${pageContext.request.contextPath}/logout"
            class="bg-red-500 px-4 py-2 rounded-lg font-medium hover:bg-red-600">
             Logout

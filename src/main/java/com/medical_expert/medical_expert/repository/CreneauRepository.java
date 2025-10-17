@@ -8,7 +8,6 @@ import java.util.List;
 
 public class CreneauRepository {
 
-    // Sauvegarder un nouveau créneau
     public void save(Creneau creneau) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
@@ -17,7 +16,6 @@ public class CreneauRepository {
         em.close();
     }
 
-    // Mettre à jour un créneau existant
     public void update(Creneau creneau) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
@@ -26,7 +24,6 @@ public class CreneauRepository {
         em.close();
     }
 
-    // Supprimer un créneau
     public void delete(Creneau creneau) {
         EntityManager em = JpaUtil.getEntityManager();
         em.getTransaction().begin();
@@ -35,7 +32,6 @@ public class CreneauRepository {
         em.close();
     }
 
-    // Chercher un créneau par son ID
     public Creneau findById(Long id) {
         EntityManager em = JpaUtil.getEntityManager();
         Creneau creneau = em.find(Creneau.class, id);
@@ -43,7 +39,6 @@ public class CreneauRepository {
         return creneau;
     }
 
-    // Lister tous les créneaux
     public List<Creneau> findAll() {
         EntityManager em = JpaUtil.getEntityManager();
         TypedQuery<Creneau> query = em.createQuery("SELECT c FROM Creneau c", Creneau.class);
@@ -52,7 +47,6 @@ public class CreneauRepository {
         return result;
     }
 
-    // Lister les créneaux disponibles pour un spécialiste donné
     public List<Creneau> findAvailableBySpecialiste(Long specialisteId) {
         EntityManager em = JpaUtil.getEntityManager();
         TypedQuery<Creneau> query = em.createQuery(
