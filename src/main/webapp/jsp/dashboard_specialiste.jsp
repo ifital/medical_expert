@@ -50,15 +50,15 @@
     <form method="get" class="mb-6 flex flex-wrap gap-4 items-center">
         <select name="statut" class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300">
             <option value="">-- Statut --</option>
-            <option value="EN_ATTENTE">En attente</option>
-            <option value="TERMINEE">Terminée</option>
+            <option value="EN_ATTENTE" <c:if test="${selectedStatut == 'EN_ATTENTE'}">selected</c:if>>En attente</option>
+            <option value="TERMINEE" <c:if test="${selectedStatut == 'TERMINEE'}">selected</c:if>>Terminée</option>
         </select>
 
         <select name="priorite" class="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300">
             <option value="">-- Priorité --</option>
-            <option value="HAUTE">Haute</option>
-            <option value="MOYENNE">Moyenne</option>
-            <option value="BASSE">Basse</option>
+            <option value="HAUTE" <c:if test="${selectedPriorite == 'HAUTE'}">selected</c:if>>Haute</option>
+            <option value="MOYENNE" <c:if test="${selectedPriorite == 'MOYENNE'}">selected</c:if>>Moyenne</option>
+            <option value="BASSE" <c:if test="${selectedPriorite == 'BASSE'}">selected</c:if>>Basse</option>
         </select>
 
         <button type="submit" class="btn-primary text-white px-4 py-2 rounded-lg">
@@ -97,7 +97,14 @@
                                 ${demande.statut}
                         </span>
                     </td>
-                    <td class="py-2 px-4 border">${demande.priorite}</td>
+                    <td class="py-2 px-4 border">
+                        <span class="px-2 py-1 rounded-full
+                            ${demande.priorite == 'HAUTE' ? 'bg-red-100 text-red-700' :
+                              (demande.priorite == 'MOYENNE' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-green-100 text-green-700')}">
+                                ${demande.priorite}
+                        </span>
+                    </td>
                     <td class="py-2 px-4 border">${demande.reponse}</td>
                     <td class="py-2 px-4 border">${demande.recommandations}</td>
                 </tr>

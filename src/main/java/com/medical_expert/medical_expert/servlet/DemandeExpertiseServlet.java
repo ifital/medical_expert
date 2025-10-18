@@ -30,22 +30,24 @@ public class DemandeExpertiseServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Récupération des paramètres de filtrage
+        // Paramètres de filtrage
         String statutParam = request.getParameter("statut");
         String prioriteParam = request.getParameter("priorite");
 
         // Récupération de toutes les demandes
         List<DemandeExpertise> allDemandes = expertiseService.getAllDemandes();
 
-        // Filtrage via Stream API
+        // Filtrage
         List<DemandeExpertise> filteredDemandes = allDemandes.stream()
-                .filter(d -> (statutParam == null || d.getStatut().equalsIgnoreCase(statutParam)))
-                .filter(d -> (prioriteParam == null || d.getPriorite().equalsIgnoreCase(prioriteParam)))
+                .filter(d -> statutParam == null || statutParam.isEmpty() || d.getStatut().equalsIgnoreCase(statutParam))
+                .filter(d -> prioriteParam == null || prioriteParam.isEmpty() || d.getPriorite().equalsIgnoreCase(prioriteParam))
                 .collect(Collectors.toList());
 
+        // Transmission au JSP
         request.setAttribute("demandes", filteredDemandes);
+        request.setAttribute("selectedStatut", statutParam);
+        request.setAttribute("selectedPriorite", prioriteParam);
 
-        // Redirection vers la JSP
         request.getRequestDispatcher("/jsp/dashboard_specialiste.jsp").forward(request, response);
     }
 
@@ -59,10 +61,10 @@ public class DemandeExpertiseServlet extends HttpServlet {
             Long creneauId = Long.parseLong(request.getParameter("creneauId"));
             String question = request.getParameter("question");
             String priorite = request.getParameter("priorite");
-            String reponse = request.getParameter("reponse"); // <-- ajouté
-            String recommandations = request.getParameter("recommandations"); // <-- ajouté
+            String reponse = request.getParameter("reponse");
+            String recommandations = request.getParameter("recommandations");
 
-            // Récupération depuis la BDD
+            // Vérification des objets existants
             Consultation consultation = consultationRepo.findById(consultationId);
             Specialiste specialiste = specialisteRepo.findById(specialisteId);
             Creneau creneau = creneauRepo.findById(creneauId);
@@ -75,6 +77,7 @@ public class DemandeExpertiseServlet extends HttpServlet {
 
             if (!creneau.isDisponible()) {
                 request.setAttribute("error", "Ce créneau n'est plus disponible.");
+                request.getRequestDispatcher("/jsp/formulaire_demande.jsp").forward(request, response);
                 return;
             }
 
@@ -85,17 +88,17 @@ public class DemandeExpertiseServlet extends HttpServlet {
             demande.setCreneau(creneau);
             demande.setQuestion(question);
             demande.setPriorite(priorite);
-            demande.setReponse(reponse); // <-- assigné
-            demande.setRecommandations(recommandations); // <-- assigné
+            demande.setReponse(reponse);
+            demande.setRecommandations(recommandations);
 
-            // Bloquer le créneau et mettre à jour BDD
+            // Bloquer le créneau
             creneau.setDisponible(false);
             creneauRepo.update(creneau);
 
             // Sauvegarder la demande
             expertiseService.createDemande(demande);
 
-            response.sendRedirect(request.getContextPath() + "/dashboard/generaliste");
+            response.sendRedirect(request.getContextPath() + "/expertise/request");
 
         } catch (NumberFormatException e) {
             request.setAttribute("error", "ID consultation, spécialiste ou créneau invalide.");
