@@ -197,8 +197,6 @@
         <button onclick="closeExpertiseModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl">&times;</button>
     </div>
 </div>
-
-<!-- SCRIPT CORRIGÉ -->
 <script>
     // Modal Consultation
     function openModal() { document.getElementById('consultationModal').classList.remove('hidden'); }
@@ -218,7 +216,7 @@
         <c:forEach var="entry" items="${creneauxDisponibles}" varStatus="loopEntry">
         "${entry.key}": [
             <c:forEach var="c" items="${entry.value}" varStatus="loop">
-            {id: "${c.id}", debut: "${c.debut.toLocalTime()}", fin: "${c.fin.toLocalTime()}"}<c:if test="${!loop.last}">,</c:if>
+            {id: "${c.id}", debut: "${c.debut.toString()}", fin: "${c.fin.toString()}"}<c:if test="${!loop.last}">,</c:if>
             </c:forEach>
         ]<c:if test="${!loopEntry.last}">,</c:if>
         </c:forEach>
@@ -234,9 +232,11 @@
 
         if (selectedId && creneauxDisponibles[selectedId]) {
             creneauxDisponibles[selectedId].forEach(c => {
+                const debut = new Date(c.debut);
+                const fin = new Date(c.fin);
                 const option = document.createElement('option');
                 option.value = c.id;
-                option.textContent = `${c.debut} → ${c.fin}`;
+                option.textContent = `${debut.toLocaleDateString('fr-FR')} ${debut.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})} → ${fin.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})}`;
                 creneauSelect.appendChild(option);
             });
         }

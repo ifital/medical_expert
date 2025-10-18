@@ -60,7 +60,14 @@ public class ConsultationAddServlet extends HttpServlet {
         consultation.setStatut("EN_COURS");
         consultation.setDateConsultation(LocalDateTime.now());
 
-        consultationService.createConsultation(consultation);
+        // Vérifier si la consultation existe déjà avant d'ajouter
+        boolean created = consultationService.createConsultation(consultation);
+
+        if (!created) {
+            req.setAttribute("error", "Une consultation identique existe déjà pour ce patient aujourd'hui.");
+            doGet(req, resp);
+            return;
+        }
 
         resp.sendRedirect(req.getContextPath() + "/dashboard/generaliste");
     }
