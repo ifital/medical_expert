@@ -33,12 +33,21 @@
             <h1 class="text-3xl font-bold tracking-tight">Tableau de bord</h1>
             <p class="text-blue-100 text-sm mt-1">Médecin Généraliste</p>
         </div>
-        <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
-            <p class="text-sm font-medium">Aujourd'hui</p>
-            <p class="text-xs text-blue-100" id="currentDate"></p>
+        <div class="flex items-center space-x-4">
+            <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-center">
+                <p class="text-sm font-medium">Aujourd'hui</p>
+                <p class="text-xs text-blue-100" id="currentDate"></p>
+            </div>
+            <div class="space-x-3">
+                <a href="${pageContext.request.contextPath}/logout"
+                   class="bg-red-500 px-4 py-2 rounded-lg font-medium hover:bg-red-600">
+                    Déconnexion
+                </a>
+            </div>
         </div>
     </div>
 </header>
+
 
 <!-- CONTENU -->
 <div class="container mx-auto px-6 py-8 max-w-7xl">
