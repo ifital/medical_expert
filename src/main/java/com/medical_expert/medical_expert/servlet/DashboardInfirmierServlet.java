@@ -33,15 +33,16 @@ public class DashboardInfirmierServlet extends HttpServlet {
                 filtrerParDate(req, resp);
                 break;
             default:
-                afficherPatients(req, resp);
+                afficherPatientsSansConsultation(req, resp); // ✅ par défaut : afficher les patients sans consultation
                 break;
         }
     }
 
-    /** ✅ Afficher tous les patients */
-    private void afficherPatients(HttpServletRequest req, HttpServletResponse resp)
+    /** ✅ Afficher uniquement les patients sans consultation */
+    private void afficherPatientsSansConsultation(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        List<Patient> patients = patientService.getAllPatients()
+
+        List<Patient> patients = patientService.getPatientsWithoutConsultation()
                 .stream()
                 .sorted(Comparator.comparing(Patient::getDateArrivee).reversed())
                 .collect(Collectors.toList());
@@ -58,12 +59,12 @@ public class DashboardInfirmierServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/dashboard/infirmier?action=list");
     }
 
-    /** ✅ Filtrer par date */
+    /** ✅ Filtrer par date (sur les patients sans consultation) */
     private void filtrerParDate(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         String dateParam = req.getParameter("date");
-        List<Patient> patients = patientService.getAllPatients();
+        List<Patient> patients = patientService.getPatientsWithoutConsultation();
 
         if (dateParam != null && !dateParam.isEmpty()) {
             LocalDate dateRecherche = LocalDate.parse(dateParam);
@@ -138,7 +139,7 @@ public class DashboardInfirmierServlet extends HttpServlet {
             patientService.createPatient(p);
         }
 
-        // ✅ Redirection pour éviter la double soumission
+        // ✅ Redirection vers la liste des patients sans consultation
         resp.sendRedirect(req.getContextPath() + "/dashboard/infirmier?action=list");
     }
 

@@ -29,4 +29,9 @@ public class PatientService {
         patientRepo.deleteById(id);
     }
 
+    public List<Patient> getPatientsWithoutConsultation() {
+        return patientRepo.findPatientsWithoutConsultation();
+    }
+
+
 }

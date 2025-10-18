@@ -48,4 +48,16 @@ public class PatientRepository {
         em.close();
     }
 
+    public List<Patient> findPatientsWithoutConsultation() {
+        EntityManager em = JpaUtil.getEntityManager();
+        try {
+            TypedQuery<Patient> query = em.createQuery(
+                    "SELECT p FROM Patient p WHERE p.id NOT IN " +
+                            "(SELECT c.patient.id FROM Consultation c)", Patient.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }
