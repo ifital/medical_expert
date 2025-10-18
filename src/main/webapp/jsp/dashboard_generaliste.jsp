@@ -177,18 +177,9 @@
                           class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
                           placeholder="Décrivez votre question pour le spécialiste..."></textarea>
             </div>
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Recommandations :</label>
-                <textarea name="recommandations" rows="3"
-                          class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
-                          placeholder="Recommandations éventuelles..."></textarea>
-            </div>
-            <div>
-                <label class="block text-gray-700 mb-1 font-medium">Réponse :</label>
-                <textarea name="reponse" rows="3"
-                          class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300"
-                          placeholder="Réponse du spécialiste (si disponible)..."></textarea>
-            </div>
+            <!-- Ces champs seront remplis plus tard par le spécialiste, on les laisse vides ou masqués -->
+            <input type="hidden" name="recommandations" value="">
+            <input type="hidden" name="reponse" value="">
             <div>
                 <label class="block text-gray-700 mb-1 font-medium">Priorité :</label>
                 <select name="priorite" required class="w-full border rounded-lg px-4 py-2 focus:ring focus:ring-blue-300">
